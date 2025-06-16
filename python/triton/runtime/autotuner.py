@@ -245,9 +245,10 @@ class Autotuner(KernelInterface):
         if knobs.autotuning.print and not used_cached_result:
             print(f"Triton autotuning for function {self.base_fn.__name__},\nwith key as {key},\n"
                   f"finished after {self.bench_time:.2f}s,\nbest config selected: {self.best_config};")
+        full_nargs = {**self.nargs, **kwargs, **config.all_kwargs()}
         if config.pre_hook is not None:
-            full_nargs = {**self.nargs, **kwargs, **config.all_kwargs()}
             config.pre_hook(full_nargs)
+        self.pre_hook(full_nargs, reset_only=True)
         ret = self.fn.run(
             *args,
             **kwargs,
